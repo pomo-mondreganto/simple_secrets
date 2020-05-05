@@ -13,3 +13,11 @@ Neither secret nor passphrase are stored on server in plaintext. Secret is encry
 passphrase is HMACed.  
 
 It's written in Sanic with MongoDB as the storage.
+
+### How to start
+
+1. Copy `config/environment.env.example` to `config/environment.example`
+2. **Change secret key** 
+3. Run `docker-compose up --build -d`
+
+That's all, the service is running on `http://127.0.0.1:8080`.
