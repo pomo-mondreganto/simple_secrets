@@ -71,6 +71,29 @@ def test_invalid_secret_key():
     assert bool(data.get('error'))
 
 
+def test_generate_invalid_json():
+    _, response = app.test_client.post(f'/generate/')
+    assert response.status != 200
+
+
+def test_generate_no_passphrase_or_secret():
+    _, response = app.test_client.post(f'/generate/', json={'secret': 'kek', 'no': 'passphrase'})
+    assert response.status != 200
+
+    _, response = app.test_client.post(f'/generate/', json={'passphrase': 'kek', 'no': 'secret'})
+    assert response.status != 200
+
+
+def test_get_secret_invalid_json():
+    _, response = app.test_client.post(f'/secret/1234/')
+    assert response.status != 200
+
+
+def test_get_secret_no_passphrase():
+    _, response = app.test_client.post(f'/secret/123456534/', json={'secret': 'kek', 'no': 'passphrase'})
+    assert response.status != 200
+
+
 def test_error_response():
     response = make_error_response('some error', status=419)
     assert response.status == 419
