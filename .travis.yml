@@ -1,0 +1,35 @@
+language: python
+
+python:
+  - "3.7"
+
+env:
+  - DOCKER_COMPOSE_VERSION=1.25.5
+
+services:
+  - docker
+  - mongodb
+
+before_install:
+  - sudo rm /usr/local/bin/docker-compose
+  - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
+  - chmod +x docker-compose
+  - sudo mv docker-compose /usr/local/bin
+
+install:
+  - pip3 install -r src/requirements.txt
+  - cp config/environment.env.example
+  - export $(egrep -v '^#' config/environment.env | xargs)
+  - export MONGO_HOST=127.0.0.1
+
+before_script:
+  - docker-compose up --build -d
+  - sleep 60
+  - mongo avito_entry --eval "db.createUser({user:'$MONGO_INITDB_ROOT_USERNAME',pwd:'$MONGO_INITDB_ROOT_PASSWORD',roles:['readWrite']});"
+
+script:
+  - docker ps
+  - pytest src/
+
+#after_failure:
+#  - docker-compose -f docker-compose-tests.yml logs

@@ -1,0 +1,27 @@
+version: '2.4'
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: ./config/backend/Dockerfile
+    restart: on-failure
+    env_file:
+      - ./config/environment.env
+
+  nginx:
+    image: nginx:1.18.0-alpine
+    volumes:
+      - ./config/nginx/app.conf:/etc/nginx/conf.d/default.conf
+      - ./config/nginx/proxy_params:/etc/nginx/proxy_params
+    restart: on-failure
+    ports:
+      - "8080:80"
+
+  mongo:
+    image: mongo:4.2.6
+    volumes:
+      - ./volumes/mongo/data:/data/db
+    restart: on-failure
+    env_file:
+      - ./config/environment.env
