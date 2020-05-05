@@ -33,6 +33,7 @@ async def add_secret(app: Sanic, secret: str, passphrase: str) -> str:
     :param passphrase: passphrase associated with a secret
     :return: secret key to acquire secret afterwards
     """
+
     key = get_aes_key(app, passphrase)
 
     sign = hmac.digest(key=key, msg=passphrase.encode(), digest='sha512').hex()
