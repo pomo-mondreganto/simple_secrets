@@ -1,6 +1,19 @@
 from app import app, make_error_response
 
 
+def simple_add_secret(secret, passphrase) -> str:
+    _, response = app.test_client.post(
+        '/generate/',
+        json={
+            'secret': secret,
+            'passphrase': passphrase,
+        },
+    )
+    data = response.json
+    secret_key = data['secret_key']
+    return secret_key
+
+
 def test_simple_generate():
     secret = 'my_secret'
     passphrase = 'passphrase'
@@ -19,15 +32,7 @@ def test_simple_generate():
 def test_simple_get_secret():
     secret = 'my_secret'
     passphrase = 'passphrase'
-    _, response = app.test_client.post(
-        '/generate/',
-        json={
-            'secret': secret,
-            'passphrase': passphrase,
-        },
-    )
-    data = response.json
-    secret_key = data['secret_key']
+    secret_key = simple_add_secret(secret, passphrase)
 
     _, response = app.test_client.post(
         f'/secret/{secret_key}/',
@@ -41,15 +46,7 @@ def test_simple_get_secret():
 def test_invalid_passphrase():
     secret = 'my_secret'
     passphrase = 'passphrase'
-    _, response = app.test_client.post(
-        '/generate/',
-        json={
-            'secret': secret,
-            'passphrase': passphrase,
-        },
-    )
-    data = response.json
-    secret_key = data['secret_key']
+    secret_key = simple_add_secret(secret, passphrase)
 
     _, response = app.test_client.post(
         f'/secret/{secret_key}/',
@@ -63,14 +60,7 @@ def test_invalid_passphrase():
 def test_invalid_secret_key():
     secret = 'my_secret'
     passphrase = 'passphrase'
-
-    app.test_client.post(
-        '/generate/',
-        json={
-            'secret': secret,
-            'passphrase': passphrase,
-        },
-    )
+    simple_add_secret(secret, passphrase)
 
     _, response = app.test_client.post(
         f'/secret/invalid_secret_key/',
