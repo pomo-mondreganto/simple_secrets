@@ -12,10 +12,14 @@ app.secret_key = os.environ['BACKEND_SECRET_KEY']
 
 
 def get_db_client():
-    mongo_host = os.environ.get('MONGO_HOST', '127.0.0.1')
-    mongo_username = os.environ['MONGO_INITDB_ROOT_USERNAME']
-    mongo_password = os.environ['MONGO_INITDB_ROOT_PASSWORD']
-    conn_url = f'mongodb://{mongo_username}:{mongo_password}@{mongo_host}:27017/'
+    if os.environ.get('TRAVIS'):
+        conn_url = f'mongodb://127.0.0.1:27017/'
+    else:
+        mongo_host = os.environ.get('MONGO_HOST', '127.0.0.1')
+        mongo_username = os.environ['MONGO_INITDB_ROOT_USERNAME']
+        mongo_password = os.environ['MONGO_INITDB_ROOT_PASSWORD']
+        conn_url = f'mongodb://{mongo_username}:{mongo_password}@{mongo_host}:27017/'
+
     client = AsyncIOMotorClient(conn_url)
     return client
 
