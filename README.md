@@ -1,4 +1,6 @@
 [![Build Status](https://travis-ci.com/pomo-mondreganto/simple_secrets.svg?branch=master)](https://travis-ci.com/pomo-mondreganto/simple_secrets)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/c60380090ebd4d9bb21400aafcd4c955)](https://www.codacy.com/manual/nikrom2012/simple_secrets?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=pomo-mondreganto/simple_secrets&amp;utm_campaign=Badge_Grade)
+[![Codacy Badge](https://api.codacy.com/project/badge/Coverage/c60380090ebd4d9bb21400aafcd4c955)](https://www.codacy.com/manual/nikrom2012/simple_secrets?utm_source=github.com&utm_medium=referral&utm_content=pomo-mondreganto/simple_secrets&utm_campaign=Badge_Coverage)
 
 # simple_secrets
 
