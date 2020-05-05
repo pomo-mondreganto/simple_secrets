@@ -14,7 +14,7 @@ app.secret_key = os.environ['BACKEND_SECRET_KEY']
 def get_db_client():
     if os.environ.get('TRAVIS'):
         conn_url = f'mongodb://127.0.0.1:27017/'
-    else:
+    else:  # pragma: no cover
         mongo_host = os.environ.get('MONGO_HOST', '127.0.0.1')
         mongo_username = os.environ['MONGO_INITDB_ROOT_USERNAME']
         mongo_password = os.environ['MONGO_INITDB_ROOT_PASSWORD']
@@ -38,7 +38,7 @@ def make_error_response(error, status=400):
 async def generate(request):
     """A route to generate secret key
 
-        secret & passphrase need to be provided in json
+    secret & passphrase need to be provided in json
     """
     try:
         secret = request.json.get('secret')
@@ -56,7 +56,7 @@ async def generate(request):
 
 @app.route('/secret/<secret_key>/', methods=['POST'])
 async def get_secret(request, secret_key):
-    """Get secret by secret_key (in url) and passphrase (in json)"""
+    """Get secret by secret_key (in url) and passphrase (in json)."""
     try:
         passphrase = request.json.get('passphrase')
     except AttributeError:
@@ -75,5 +75,5 @@ async def get_secret(request, secret_key):
     return json({'secret': secret})
 
 
-if __name__ == '__main__':
+if __name__ == '__main__':  # pragma: no cover
     app.run(debug=True, port=5000, host='0.0.0.0')
