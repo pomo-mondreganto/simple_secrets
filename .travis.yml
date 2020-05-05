@@ -22,12 +22,7 @@ install:
   - export $(egrep -v '^#' config/environment.env | xargs)
   - export MONGO_HOST=127.0.0.1
 
-before_script:
-  - docker-compose up --build -d
-  - sleep 60
-
 script:
-  - docker ps
   - pytest src/
 
 #after_failure:
