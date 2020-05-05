@@ -26,7 +26,7 @@ before_script:
   - sleep 15
 
 script:
-  - pytest src/
+  - coverage run -m pytest src/
 
-#after_failure:
-#  - docker-compose -f docker-compose-tests.yml logs
+after_script:
+  - bash <(curl -Ls https://coverage.codacy.com/get.sh)
