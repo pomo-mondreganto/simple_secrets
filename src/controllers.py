@@ -51,7 +51,8 @@ async def add_secret(app: Sanic, secret: str, passphrase: str) -> str:
 
 
 async def get_secret(app: Sanic, secret_key: str, passphrase: str) -> str:
-    """Get a secret from app.db, validating it.
+    """
+    Get a secret from app.db, validating it.
 
     :param app: Sanic application
     :param secret_key: secret key associated with a secret

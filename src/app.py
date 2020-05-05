@@ -36,10 +36,7 @@ def make_error_response(error, status=400):
 
 @app.route('/generate/', methods=['POST'])
 async def generate(request):
-    """A route to generate secret key
-
-    secret & passphrase need to be provided in json
-    """
+    """A route to generate secret key by secret & passphrase (in JSON)."""
     try:
         secret = request.json.get('secret')
         passphrase = request.json.get('passphrase')
