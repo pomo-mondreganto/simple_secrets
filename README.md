@@ -1,3 +1,4 @@
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/bc442fa9d191495694f1be126ca68dbd)](https://app.codacy.com/manual/nikrom2012/simple_secrets?utm_source=github.com&utm_medium=referral&utm_content=pomo-mondreganto/simple_secrets&utm_campaign=Badge_Grade_Dashboard)
 [![Build Status](https://travis-ci.com/pomo-mondreganto/simple_secrets.svg?branch=master)](https://travis-ci.com/pomo-mondreganto/simple_secrets)
 
 # simple_secrets
