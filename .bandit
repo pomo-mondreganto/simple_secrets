@@ -1,2 +1,2 @@
-# codacy:
-skips: ['B101','B203']
+[bandit]
+skips: B101,D203
