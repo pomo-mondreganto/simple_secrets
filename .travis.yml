@@ -22,6 +22,10 @@ install:
   - export $(egrep -v '^#' config/environment.env | xargs)
   - export MONGO_HOST=127.0.0.1
 
+before_script:
+  - sleep 15
+  - mongo avito_entry --eval 'db.createUser({user:"root",pwd:"secret",roles:["readWrite"]});'
+
 script:
   - pytest src/
 
