@@ -1,2 +1,2 @@
 # codacy:
-skips: B101,B203
+skips: ['B101','B203']
