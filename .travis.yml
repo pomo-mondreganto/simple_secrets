@@ -18,7 +18,7 @@ before_install:
 
 install:
   - pip3 install -r src/requirements.txt
-  - cp config/environment.env.example
+  - cp config/environment.env.example config/environment.env
   - export $(egrep -v '^#' config/environment.env | xargs)
   - export MONGO_HOST=127.0.0.1
 
