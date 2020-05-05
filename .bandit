@@ -1,5 +1,2 @@
 # codacy:
-# Solve flagged valid Python "assert" statements
-skips: ['B101']
-# Solve conflicting "blank line before class docstring"
-skips: ['D203']
+skips: B101,B203
