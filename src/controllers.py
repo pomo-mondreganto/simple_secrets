@@ -25,7 +25,8 @@ def unpad(s: bytes) -> bytes:
 
 
 async def add_secret(app: Sanic, secret: str, passphrase: str) -> str:
-    """Add a secret to app.db.
+    """
+    Add a secret to app.db.
 
     :param app: Sanic app
     :param secret: secret to add
