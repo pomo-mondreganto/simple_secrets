@@ -25,7 +25,6 @@ install:
 before_script:
   - docker-compose up --build -d
   - sleep 60
-  - mongo avito_entry --eval "db.createUser({user:'$MONGO_INITDB_ROOT_USERNAME',pwd:'$MONGO_INITDB_ROOT_PASSWORD',roles:['readWrite']});"
 
 script:
   - docker ps
