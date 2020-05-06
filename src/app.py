@@ -7,7 +7,7 @@ from sanic.response import json
 import controllers
 import exceptions
 
-app = Sanic('avito_entry')
+app = Sanic('simple_secrets')
 app.secret_key = os.environ['BACKEND_SECRET_KEY']
 
 
@@ -27,7 +27,7 @@ def get_db_client():
 @app.listener('before_server_start')
 def init_db(_sanic, _loop):
     client = get_db_client()
-    app.db = client.avito_entry
+    app.db = client.simple_secrets
 
 
 def make_error_response(error, status=400):

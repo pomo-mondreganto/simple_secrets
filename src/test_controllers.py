@@ -13,7 +13,7 @@ def test_unpad():
 
 
 async def test_add_secret():
-    app.db = get_db_client().avito_entry
+    app.db = get_db_client().simple_secrets
     secret = 'my_secret'
     passphrase = 'passphrase'
     secret_key = await controllers.add_secret(app, secret, passphrase)
@@ -29,7 +29,7 @@ async def test_add_secret():
 
 
 async def test_get_secret():
-    app.db = get_db_client().avito_entry
+    app.db = get_db_client().simple_secrets
     secret = 'my_secret'
     passphrase = 'passphrase'
     secret_key = await controllers.add_secret(app, secret, passphrase)
