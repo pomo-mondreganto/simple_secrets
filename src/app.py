@@ -55,8 +55,8 @@ async def generate(request):
     except ValueError:
         return make_error_response('ttl must be an integer')
 
-    if ttl and ttl > MAX_TTL:  # a day
-        return make_error_response(f'ttl must be <= {MAX_TTL}')
+    if ttl and (ttl < 0 or ttl > MAX_TTL):  # a day
+        return make_error_response(f'ttl must be a non-negative integer less or equal to {MAX_TTL}')
 
     if not secret or not passphrase:
         return make_error_response('both secret and passphrase are required')

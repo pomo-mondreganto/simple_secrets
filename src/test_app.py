@@ -99,6 +99,16 @@ def test_generate_with_ttl():
     assert response.status == 200
 
 
+def test_generate_too_large_ttl():
+    _, response = app.test_client.post(f'/generate/', json={'secret': 'kek', 'passphrase': 'any', 'ttl': 100000})
+    assert response.status != 200
+
+
+def test_generate_negative_ttl():
+    _, response = app.test_client.post(f'/generate/', json={'secret': 'kek', 'passphrase': 'any', 'ttl': -10})
+    assert response.status != 200
+
+
 def test_get_secret_invalid_json():
     _, response = app.test_client.post(f'/secret/1234/')
     assert response.status != 200
