@@ -10,6 +10,8 @@ import exceptions
 app = Sanic('simple_secrets')
 app.secret_key = os.environ['BACKEND_SECRET_KEY']
 
+MAX_TTL = 60 * 60 * 24
+
 
 def get_db_client():
     if os.environ.get('TRAVIS'):
@@ -36,17 +38,29 @@ def make_error_response(error, status=400):
 
 @app.route('/generate/', methods=['POST'])
 async def generate(request):
-    """A route to generate secret key by secret & passphrase (in JSON)."""
+    """
+    A route to generate secret key by secret & passphrase (in JSON).
+
+    ttl can be passed optionally
+    """
     try:
         secret = request.json.get('secret')
         passphrase = request.json.get('passphrase')
+        ttl = request.json.get('ttl')
+        if ttl:
+            ttl = int(ttl)
     except AttributeError:
         return make_error_response('valid json required')
+    except ValueError:
+        return make_error_response('ttl must be an integer')
+
+    if ttl and ttl > MAX_TTL:  # a day
+        return make_error_response(f'ttl must be <= {MAX_TTL}')
 
     if not secret or not passphrase:
         return make_error_response('both secret and passphrase are required')
 
-    secret_key = await controllers.add_secret(app, secret, passphrase)
+    secret_key = await controllers.add_secret(app, secret, passphrase, ttl)
 
     return json({'secret_key': secret_key})
 

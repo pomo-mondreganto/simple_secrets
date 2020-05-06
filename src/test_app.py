@@ -84,6 +84,21 @@ def test_generate_no_passphrase_or_secret():
     assert response.status != 200
 
 
+def test_generate_no_ttl():
+    _, response = app.test_client.post(f'/generate/', json={'secret': 'kek', 'passphrase': 'any'})
+    assert response.status == 200
+
+
+def test_generate_non_int_ttl():
+    _, response = app.test_client.post(f'/generate/', json={'secret': 'kek', 'passphrase': 'any', 'ttl': 'kek'})
+    assert response.status != 200
+
+
+def test_generate_with_ttl():
+    _, response = app.test_client.post(f'/generate/', json={'secret': 'kek', 'passphrase': 'any', 'ttl': 10})
+    assert response.status == 200
+
+
 def test_get_secret_invalid_json():
     _, response = app.test_client.post(f'/secret/1234/')
     assert response.status != 200

@@ -1,52 +1,46 @@
+import base64
 import hashlib
 import hmac
 import secrets
+from typing import Optional
 
-from Crypto.Cipher import AES
+from cryptography import fernet
 from sanic import Sanic
 
 import exceptions
 
 
-def get_aes_key(app: Sanic, passphrase: str) -> bytes:
-    """Combine app.secret_key and passphrase, cut by BS length."""
+def get_fernet_key(app: Sanic, passphrase: str) -> bytes:
+    """Combine app.secret_key and passphrase, cut by key length."""
     salted = (passphrase + app.secret_key).encode()
-    return hashlib.sha256(salted).digest()[:AES.block_size]
+    key = hashlib.sha256(salted).digest()[:32]
+    return base64.urlsafe_b64encode(key)
 
 
-def pad(s: bytes) -> bytes:
-    """Pad 16-byte data for AES."""
-    return s + bytes([16 - len(s) % 16]) * (16 - len(s) % 16)
-
-
-def unpad(s: bytes) -> bytes:
-    """Unpad 16-byte data from AES."""
-    return s[:-s[-1]]
-
-
-async def add_secret(app: Sanic, secret: str, passphrase: str) -> str:
+async def add_secret(app: Sanic, secret: str, passphrase: str, ttl: Optional[int]) -> str:
     """
     Add a secret to app.db.
 
     :param app: Sanic app
     :param secret: secret to add
     :param passphrase: passphrase associated with a secret
+    :param ttl: secret time to live (optional)
     :return: secret key to acquire secret afterwards
     """
 
-    key = get_aes_key(app, passphrase)
+    key = get_fernet_key(app, passphrase)
 
     sign = hmac.digest(key=key, msg=passphrase.encode(), digest='sha512').hex()
     secret_key = secrets.token_hex(16)
-    iv = secrets.token_bytes(16)
 
-    cipher = AES.new(key=pad(key), mode=AES.MODE_CBC, iv=iv)
-    encrypted = iv.hex() + cipher.encrypt(pad(secret.encode())).hex()
+    cipher = fernet.Fernet(key)
+    encrypted = cipher.encrypt(secret.encode()).decode()
 
     await app.db.secrets.insert_one({
         'secret': encrypted,
         'secret_key': secret_key,
         'signature': sign,
+        'ttl': ttl,
     })
 
     return secret_key
@@ -69,7 +63,7 @@ async def get_secret(app: Sanic, secret_key: str, passphrase: str) -> str:
     if not data:
         raise exceptions.InvalidSecretKeyException()
 
-    key = get_aes_key(app, passphrase)
+    key = get_fernet_key(app, passphrase)
 
     sign = hmac.digest(key=key, msg=passphrase.encode(), digest='sha512').hex()
     if sign != data['signature']:
@@ -77,9 +71,14 @@ async def get_secret(app: Sanic, secret_key: str, passphrase: str) -> str:
 
     await app.db.secrets.delete_one({'secret_key': secret_key})
 
-    iv = b''.fromhex(data['secret'][:32])
-    encrypted = b''.fromhex(data['secret'][32:])
-    cipher = AES.new(key=pad(key), mode=AES.MODE_CBC, iv=iv)
-    secret = unpad(cipher.decrypt(encrypted)).decode()
+    encrypted = data['secret'].encode()
+    cipher = fernet.Fernet(key)
+    if data.get('ttl'):
+        try:
+            secret = cipher.decrypt(encrypted, ttl=data['ttl']).decode()
+        except fernet.InvalidToken:
+            raise exceptions.InvalidSecretKeyException()
+    else:
+        secret = cipher.decrypt(encrypted).decode()
 
     return secret

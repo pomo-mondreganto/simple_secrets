@@ -1,22 +1,16 @@
+import time
+
 import controllers
+import exceptions
 from app import app, get_db_client
-
-
-def test_pad():
-    s = 'abacaba'
-    assert controllers.pad(s.encode()) == b'abacaba' + b'\x09' * 9
-
-
-def test_unpad():
-    s = b'abacaba'
-    assert controllers.unpad(controllers.pad(s)) == s
 
 
 async def test_add_secret():
     app.db = get_db_client().simple_secrets
     secret = 'my_secret'
     passphrase = 'passphrase'
-    secret_key = await controllers.add_secret(app, secret, passphrase)
+    ttl = None
+    secret_key = await controllers.add_secret(app, secret, passphrase, ttl)
     data = await app.db.secrets.find_one({
         'secret_key': secret_key,
     })
@@ -32,7 +26,23 @@ async def test_get_secret():
     app.db = get_db_client().simple_secrets
     secret = 'my_secret'
     passphrase = 'passphrase'
-    secret_key = await controllers.add_secret(app, secret, passphrase)
+    ttl = None
+    secret_key = await controllers.add_secret(app, secret, passphrase, ttl)
 
     new_secret = await controllers.get_secret(app, secret_key, passphrase)
     assert secret == new_secret
+
+
+async def test_limit_expired():
+    app.db = get_db_client().simple_secrets
+    secret = 'my_secret'
+    passphrase = 'passphrase'
+    ttl = 2
+    secret_key = await controllers.add_secret(app, secret, passphrase, ttl)
+    time.sleep(5)
+    try:
+        await controllers.get_secret(app, secret_key, passphrase)
+    except exceptions.InvalidSecretKeyException:
+        pass
+    else:
+        assert False, 'TTL not working'
