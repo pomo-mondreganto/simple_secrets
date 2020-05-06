@@ -33,6 +33,22 @@ async def test_get_secret():
     assert secret == new_secret
 
 
+# need this for coverage
+async def test_short_limit_expired():
+    app.db = get_db_client().simple_secrets
+    secret = 'my_secret'
+    passphrase = 'passphrase'
+    ttl = 2
+    secret_key = await controllers.add_secret(app, secret, passphrase, ttl)
+    time.sleep(5)
+    try:
+        await controllers.get_secret(app, secret_key, passphrase)
+    except exceptions.InvalidSecretKeyException:
+        pass
+    else:  # pragma: no cover
+        assert False, 'TTL not working'
+
+
 async def test_limit_expired():
     app.db = get_db_client().simple_secrets
     secret = 'my_secret'
