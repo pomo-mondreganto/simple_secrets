@@ -39,7 +39,8 @@ def make_error_response(error, status=400):
 
 @app.route('/generate/', methods=['POST'])
 async def generate(request):
-    """A route to generate secret key by secret & passphrase (in JSON).
+    """
+    A route to generate secret key by secret & passphrase (in JSON).
 
     ttl can be passed optionally
     """
