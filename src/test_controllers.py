@@ -39,7 +39,7 @@ async def test_limit_expired():
     passphrase = 'passphrase'
     ttl = 2
     secret_key = await controllers.add_secret(app, secret, passphrase, ttl)
-    time.sleep(5)
+    time.sleep(120)  # mongo is quite slow on deletion
     try:
         await controllers.get_secret(app, secret_key, passphrase)
     except exceptions.InvalidSecretKeyException:

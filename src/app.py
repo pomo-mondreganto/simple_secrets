@@ -27,9 +27,10 @@ def get_db_client():
 
 
 @app.listener('before_server_start')
-def init_db(_sanic, _loop):
+def init_db(sanic, _loop):
     client = get_db_client()
-    app.db = client.simple_secrets
+    sanic.db = client.simple_secrets
+    sanic.db.secrets.create_index([("expires", 1)], expireAfterSeconds=0)
 
 
 def make_error_response(error, status=400):
@@ -38,8 +39,7 @@ def make_error_response(error, status=400):
 
 @app.route('/generate/', methods=['POST'])
 async def generate(request):
-    """
-    A route to generate secret key by secret & passphrase (in JSON).
+    """A route to generate secret key by secret & passphrase (in JSON).
 
     ttl can be passed optionally
     """

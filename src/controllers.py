@@ -2,6 +2,7 @@ import base64
 import hashlib
 import hmac
 import secrets
+from datetime import datetime, timedelta
 from typing import Optional
 
 from cryptography import fernet
@@ -36,11 +37,15 @@ async def add_secret(app: Sanic, secret: str, passphrase: str, ttl: Optional[int
     cipher = fernet.Fernet(key)
     encrypted = cipher.encrypt(secret.encode()).decode()
 
+    expires = None
+    if ttl:
+        expires = datetime.utcnow() + timedelta(seconds=ttl)
+
     await app.db.secrets.insert_one({
         'secret': encrypted,
         'secret_key': secret_key,
         'signature': sign,
-        'ttl': ttl,
+        'expires': expires,
     })
 
     return secret_key
