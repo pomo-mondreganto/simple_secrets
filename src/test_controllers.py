@@ -44,5 +44,5 @@ async def test_limit_expired():
         await controllers.get_secret(app, secret_key, passphrase)
     except exceptions.InvalidSecretKeyException:
         pass
-    else:
+    else:  # pragma: no cover
         assert False, 'TTL not working'
