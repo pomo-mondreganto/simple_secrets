@@ -45,7 +45,8 @@ async def add_secret(app: Sanic, secret: str, passphrase: str, ttl: Optional[int
         'secret': encrypted,
         'secret_key': secret_key,
         'signature': sign,
-        'expires': expires,
+        'expires': expires,  # for mongo index
+        'ttl': ttl,  # for fernet check
     })
 
     return secret_key
